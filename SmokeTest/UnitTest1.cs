@@ -64,7 +64,7 @@ namespace WebDriverTest
             #region does_not_work
            // click on Записаться на курсы
            IWebElement element4 = driver.
-             FindElement(By.Id("//*[@id=\"navbar-collapse-1\"]/ul/li/a[@href=\"/zapisatsya-na-kursy.html\"]"));
+             FindElement(By.XPath("//*[@id=\"navbar-collapse-1\"]/ul/li/a[@href=\"/zapisatsya-na-kursy.html\"]"));
              element4.Click();
            // driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
             #endregion
