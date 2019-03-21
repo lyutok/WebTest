@@ -1,7 +1,9 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 using System;
+using System.Threading;
 
 namespace WebDriverTest
 {
@@ -27,7 +29,11 @@ namespace WebDriverTest
         [Test]
         public void Smoke()
         {
+            //Arrange
+
+            // Act
             // click on all four links
+
             IWebElement element = driver.
                 FindElement(By.XPath("//*[@id=\"mpfp_nav_cource\"]/li[1]/a"));
             element.Click();
@@ -66,34 +72,48 @@ namespace WebDriverTest
            IWebElement element4 = driver.
              FindElement(By.XPath("//*[@id=\"navbar-collapse-1\"]/ul/li/a[@href=\"/zapisatsya-na-kursy.html\"]"));
              element4.Click();
-           // driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+            // driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
             #endregion
 
             // driver.Navigate().GoToUrl("http://old.qalight.com.ua/zapisatsya-na-kursy.html");
+
 
             IWebElement element5 = driver.
               FindElement(By.XPath("//*[@id=\"fox_form_m135\"]/div[9]/div/button[1]"));
             element5.Click();
 
-            IWebElement element6 = driver.
-                FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваша Фамилия')]"));
+            //IWebElement failElement = driver.
+            //   FindElement(By.CssSelector(".alert.alert-error"));
 
-            IWebElement element7 = driver.
-                FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваше Имя')]"));
-            
-            IWebElement element8 = driver.
-                FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваш Телефон')]"));
-            
-            IWebElement element9 = driver.
-                FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваш E-Mail')]"));
-            
-            IWebElement element10 = driver.
-                FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваш Skype')]"));
-            
-            IWebElement element11 = driver.
-                FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Откуда Вы узнали о QALight')]"));
+            string expectedElementLocatorFail = ".alert.alert-error";
+            Assert.True(IsElementPresent(driver, expectedElementLocatorFail),
+                $"Element with locator {expectedElementLocatorFail} is not present on the page.");
+
+            //IWebElement element6 = driver.
+            //    FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваша Фамилия')]"));
+
+            //IWebElement element7 = driver.
+            //    FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваше Имя')]"));
+
+            //IWebElement element8 = driver.
+            //    FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваш Телефон')]"));
+
+            //IWebElement element9 = driver.
+            //    FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваш E-Mail')]"));
+
+            //IWebElement element10 = driver.
+            //    FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Ваш Skype')]"));
+
+            //IWebElement element11 = driver.
+            //    FindElement(By.XPath("//*[contains(text(), 'Недопустимое значение: Откуда Вы узнали о QALight')]"));
 
             // Fill in the form
+
+            // select from dropdown
+            IWebElement course = driver.FindElement(By.CssSelector("[name='_7c8289bf6b8e80c1749ef54ab01b92b8']"));
+            SelectElement courseDropdown = new SelectElement(course);
+            courseDropdown.SelectByIndex(3);
+
             IWebElement element12 = driver.
                 FindElement(By.XPath("//*[@id=\"fox_form_m135\"]/div[1]/div/select/option[2]"));
 
@@ -117,23 +137,52 @@ namespace WebDriverTest
               FindElement(By.XPath("//*[@id=\"z_text2\"]"));
             element17.SendKeys("test_gmail");
 
-             IWebElement element18 = driver.
-              FindElement(By.XPath("//*[@id=\"fox_form_m135\"]/div[7]/div/select/option[4]"));
-            element18.Click();
+            // select from dropdown
+            IWebElement sourceInfo= driver.FindElement(By.CssSelector("[name='_e926ba2b2813f56de8fc13877057e908']"));
+            SelectElement sourceInfoDropdown = new SelectElement(sourceInfo);
+            sourceInfoDropdown.SelectByIndex(4);
+            //OR
+            // IWebElement element18 = driver.
+            //  FindElement(By.XPath("//*[@id=\"fox_form_m135\"]/div[7]/div/select/option[4]"));
+            //element18.Click();
 
             IWebElement element19 = driver.
              FindElement(By.XPath("//*[@id=\"fox_form_m135\"]/div[8]/div/textarea"));
             element19.SendKeys("Comment comment comment");
 
             // click Submit button
-            IWebElement element20 = driver.
-                FindElement(By.XPath("//*[@id=\"fox_form_m135\"]/div[9]/div/button[1]/span"));
-            element20.Click();
+            IWebElement submitButton = driver.
+             FindElement(By.CssSelector("[type=submit]"));
+            submitButton.Click();
 
-            IWebElement element21 = driver.
-                FindElement(By.XPath("//*[@id=\"foxcontainer_m135\"]/div"));
+            // Assert
+            // IWebElement successElement = driver.
+            //     FindElement(By.CssSelector(".alert.alert-success"));
 
-            
+            // Thread.Sleep(2000); // - заходит на стр и уходит назад
+
+            string expectedElementLocator = ".alert.alert-success";
+            Assert.True(IsElementPresent(driver, expectedElementLocator),
+                $"Element with locator {expectedElementLocator} is not present on the page.");
+
+        }
+
+        public bool IsElementPresent(IWebDriver driver, string cssSelector)
+        {
+            var elements = driver.FindElements(By.CssSelector(cssSelector));
+
+            if (elements.Count == 1)
+            {
+                return true;
+            }
+            else if (elements.Count == 0 )
+            {
+                return false;
+            }
+            else 
+            {
+                throw new Exception("Unexpected Exception");
+            }
         }
     }
 }
